@@ -3,14 +3,14 @@ from flask_login import (
     LoginManager, login_user, logout_user, login_required, current_user
 )
 from models import db, User, Ticket, TicketHistory, Comment
-
+from flask_wtf.csrf import CSRFProtect
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "change-me-later"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
-
+csrf = CSRFProtect(app)
 login_manager = LoginManager()
 login_manager.login_view = "login"
 login_manager.init_app(app)

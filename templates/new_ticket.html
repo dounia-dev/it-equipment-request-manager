@@ -8,6 +8,7 @@
             <div class="card-body">
                 <h4 class="mb-3"><i class="bi bi-plus-circle"></i> Neues Ticket</h4>
                 <form method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
                         <label class="form-label">Art</label>
                         <select name="kind" class="form-select" required>

@@ -87,13 +87,16 @@
                 </a>
                 {% if current_user.role == "ADMIN" and t.status == "OFFEN" %}
                 <form method="post" action="/tickets/{{ t.id }}/validate" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button class="btn btn-sm btn-primary">Validieren</button>
                 </form>
                 <form method="post" action="/tickets/{{ t.id }}/reject" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button class="btn btn-sm btn-danger">Ablehnen</button>
                 </form>
                 {% elif current_user.role == "SUPPLIER" and t.status == "VALIDIERT" %}
                 <form method="post" action="/tickets/{{ t.id }}/deliver" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button class="btn btn-sm btn-success">Geliefert</button>
                 </form>
                 {% endif %}
