@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Ticket #{{ t.id }}{% endblock %}
+
+{% block content %}
+{% set colors = {"OFFEN": "secondary", "VALIDIERT": "primary",
+                 "GELIEFERT": "success", "ABGELEHNT": "danger"} %}
+
+<a class="btn btn-link ps-0" href="/dashboard"><i class="bi bi-arrow-left"></i> Zurück</a>
+
+<div class="row g-4">
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h5 class="card-title">Ticket #{{ t.id }}
+                    <span class="badge bg-{{ colors[t.status] }} ms-2">{{ t.status }}</span>
+                </h5>
+                <dl class="row mb-0 mt-3">
+                    <dt class="col-5">Art</dt>
+                    <dd class="col-7">{{ "Anfrage" if t.kind == "DEMAND" else "Änderung" }}</dd>
+                    <dt class="col-5">Gerät</dt>
+                    <dd class="col-7">{{ t.equipment_type }}</dd>
+                    <dt class="col-5">Antragsteller</dt>
+                    <dd class="col-7">{{ t.owner.name }} ({{ t.owner.matricule }})</dd>
+                    <dt class="col-5">Erstellt</dt>
+                    <dd class="col-7">{{ t.created_at.strftime("%d.%m.%Y %H:%M") }}</dd>
+                    <dt class="col-5">Beschreibung</dt>
+                    <dd class="col-7">{{ t.description or "-" }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h5 class="card-title mb-3"><i class="bi bi-clock-history"></i> Verlauf</h5>
+                <ul class="list-group list-group-flush">
+                    {% for h in t.history %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>
+                            {% if h.old_status %}
+                                <span class="badge bg-{{ colors[h.old_status] }}">{{ h.old_status }}</span>
+                                <i class="bi bi-arrow-right mx-1"></i>
+                            {% endif %}
+                            <span class="badge bg-{{ colors[h.new_status] }}">{{ h.new_status }}</span>
+                            <span class="text-muted ms-2">von {{ h.user.name }}</span>
+                        </span>
+                        <span class="text-muted small">{{ h.created_at.strftime("%d.%m.%Y %H:%M") }}</span>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-muted">Kein Verlauf vorhanden.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card shadow-sm border-0 mt-4">
+    <div class="card-body">
+        <h5 class="card-title mb-3"><i class="bi bi-chat-dots"></i> Kommentare</h5>
+
+        {% for c in t.comments %}
+        <div class="border rounded p-2 mb-2 bg-white">
+            <div class="d-flex justify-content-between">
+                <strong>{{ c.author.name }}
+                    <span class="badge bg-secondary">{{ c.author.role }}</span>
+                </strong>
+                <span class="text-muted small">{{ c.created_at.strftime("%d.%m.%Y %H:%M") }}</span>
+            </div>
+            <div class="mt-1">{{ c.text }}</div>
+        </div>
+        {% else %}
+        <p class="text-muted">Noch keine Kommentare.</p>
+        {% endfor %}
+
+        <form method="post" action="/tickets/{{ t.id }}/comment" class="mt-3">
+            <textarea name="text" class="form-control mb-2" rows="2"
+                      placeholder="Kommentar schreiben..." required></textarea>
+            <button class="btn btn-dark btn-sm">
+                <i class="bi bi-send"></i> Senden
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
